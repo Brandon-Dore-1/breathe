@@ -1,18 +1,16 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
 import BreathePage from "./src/views/BreathePage";
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <BreathePage />
-    </View>
+    <BreathePage />
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000000",
+    backgroundColor: "#333333",
     alignItems: "center",
     justifyContent: "center",
   }

@@ -1,57 +1,121 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import React, { useRef, useState } from "react";
+import {
+  Animated,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
+
+const vw = (percentage) => {
+  const viewportWidth = Dimensions.get("window").width;
+  const decimal = percentage * 0.01;
+  percentage = parseInt(percentage, 10);
+
+  if (percentage < 0) {
+    percentage = 100;
+  }
+  if (percentage > 1000) {
+    percentage = 1000;
+  }
+
+  return Math.round(viewportWidth * decimal);
+};
 
 const Breather = (props) => {
   const { initialSeconds = 0 } = props;
   const [seconds, setSeconds] = useState(initialSeconds);
-  const [intervalId, setIntervalId] = React.useState(null);
+  const [intervalId, setIntervalId] = useState(null);
+  const [clicked, setClicked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (seconds <= 0) {
+  const outerAnim = useRef(new Animated.Value(1)).current;
+
+  const counter = () => {
+    setIsLoading(true);
+    if (!clicked) {
+      let i = 0;
+      let currentSecond = initialSeconds;
+      let start = true;
+      setClicked(true);
+      const id = setInterval(() => {
+        if (start) {
+          setIntervalId(id);
+          start = false;
+        }
+        currentSecond = Math.abs((i++ % (initialSeconds * 2)) - initialSeconds);
+        setSeconds(currentSecond);
+        if (currentSecond === 0) {
+          Animated.timing(outerAnim, {
+            toValue: 1,
+            duration: (0.5 + initialSeconds) * 1000,
+            useNativeDriver: false,
+          }).start();
+        }
+        if (currentSecond === initialSeconds) {
+          Animated.timing(outerAnim, {
+            toValue: 0.55,
+            duration: (0.5 + initialSeconds) * 1000,
+            useNativeDriver: false,
+          }).start();
+        }
+      }, 1000);
+    } else {
+      Animated.timing(outerAnim, {
+        toValue: 1,
+        duration: 1,
+        useNativeDriver: false,
+      }).start();
       clearInterval(intervalId);
-      setTimeout(() => setSeconds(initialSeconds), 1000);
+      setSeconds(initialSeconds);
+      setClicked(false);
     }
-  }, [seconds]);
-
-  const countdown = () => {
-    const id = setInterval(() => setSeconds((seconds) => seconds - 1), 1000);
-    setIntervalId(id);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.circle} onPress={countdown}>
+    <TouchableOpacity onPress={counter} disabled={isLoading}>
+      <Animated.View
+        style={{
+          ...styles.outerCircle,
+          transform: [{ scale: outerAnim }],
+        }}
+      ></Animated.View>
+      <View style={styles.innerCircle}>
         <Text style={styles.circleText}>{seconds}</Text>
-      </TouchableOpacity>
-    </View>
+      </View>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#000000",
-    alignItems: "center",
-    justifyContent: "center",
-  },
   circleText: {
-    lineHeight: "58vw",
-    fontSize: "20vw",
+    lineHeight: vw(50),
+    fontSize: vw(20),
     textAlign: "center",
     color: "white",
   },
-  circle: {
-    position: "relative",
-    borderRadius: "50%",
-    height: "60vw",
-    width: "60vw",
-    position: "relative",
-    boxShadow: "0 0 0 15vw rgba(36,172,201, 0.8)",
-    margin: "300px",
-    lineHeight: "58vw",
-    fontSize: "20vw",
-    textAlign: "center",
-    backgroundColor: "rgba(36,217,255, 0.8)",
+  outerCircle: {
+    width: vw(90),
+    height: vw(90),
+    borderRadius: vw(90) / 2,
+    backgroundColor: "rgba(36,217,255, 0.85)",
+  },
+  innerCircle: {
+    width: vw(50),
+    height: vw(50),
+    borderRadius: vw(50) / 2,
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flex: 1,
+    backgroundColor: "rgba(36,172,201, 1)",
+    margin: vw(20),
   },
 });
 
