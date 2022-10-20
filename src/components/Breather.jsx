@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
   StyleSheet,
@@ -24,7 +24,11 @@ const vw = (percentage) => {
 };
 
 const Breather = (props) => {
-  const { initialSeconds = 0 } = props;
+
+  useEffect(() => {
+    console.log("breather rerender")
+  }, [props])
+  const initialSeconds = props.initialSeconds
   const [seconds, setSeconds] = useState(initialSeconds);
   const [intervalId, setIntervalId] = useState(null);
   const [clicked, setClicked] = useState(false);
