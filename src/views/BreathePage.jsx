@@ -13,8 +13,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 
 const BreathePage = ({ navigation }) => {
-  const [circleOption, setcircleOption] = useState("Countdown");
-  const [breatheTime, setBreatheTime] = useState(null);
+  const [circleOption, setcircleOption] = useState();
+  const [breatheTime, setBreatheTime] = useState();
   const [isLoading, setLoading] = useState(true);
 
   const isFocused = useIsFocused();

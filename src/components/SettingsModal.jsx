@@ -11,23 +11,23 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SettingsModal = ({ navigation }) => {
-  const [circleOption, setcircleOption] = useState("Countdown");
-  const [breatheTime, setBreatheTime] = useState(5);
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+  const [circleOption, setcircleOption] = useState();
+  const [breatheTime, setBreatheTime] = useState();
+
+  const fetchData = async () => {
+    try {
+      const breatheTimeTemp = await AsyncStorage.getItem("breatheTime");
+      const circleOptionTemp = await AsyncStorage.getItem("circleOption");
+      setBreatheTime(breatheTimeTemp);
+      setcircleOption(circleOptionTemp);
+    } catch (e) {
+      Alert.alert("Error", "There was an error retrieving your settings.");
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const breatheTimeTemp = await AsyncStorage.getItem("breatheTime");
-        const circleOptionTemp = await AsyncStorage.getItem("circleOption");
-        setBreatheTime(breatheTimeTemp);
-        setcircleOption(circleOptionTemp);
-      } catch (e) {
-        Alert.alert("Error", "There was an error retrieving your settings.");
-      }
-      fetchData();
-    };
-  });
+    fetchData();
+  }, []);
 
   const storeData = async (key, value) => {
     try {
