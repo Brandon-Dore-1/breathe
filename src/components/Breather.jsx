@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
   StyleSheet,
@@ -24,13 +24,16 @@ const vw = (percentage) => {
 };
 
 const Breather = (props) => {
-  const { initialSeconds = 0 } = props;
+  const initialSeconds = props.initialSeconds;
   const [seconds, setSeconds] = useState(initialSeconds);
   const [intervalId, setIntervalId] = useState(null);
   const [clicked, setClicked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [instructions, setInstructions] = useState("In");
 
   const outerAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {}, [props]);
 
   const counter = () => {
     setIsLoading(true);
@@ -47,6 +50,7 @@ const Breather = (props) => {
         currentSecond = Math.abs((i++ % (initialSeconds * 2)) - initialSeconds);
         setSeconds(currentSecond);
         if (currentSecond === 0) {
+          setInstructions("Out");
           Animated.timing(outerAnim, {
             toValue: 1,
             duration: (0.5 + initialSeconds) * 1000,
@@ -54,6 +58,7 @@ const Breather = (props) => {
           }).start();
         }
         if (currentSecond === initialSeconds) {
+          setInstructions("In");
           Animated.timing(outerAnim, {
             toValue: 0.55,
             duration: (0.5 + initialSeconds) * 1000,
@@ -85,7 +90,10 @@ const Breather = (props) => {
         }}
       ></Animated.View>
       <View style={styles.innerCircle}>
-        <Text style={styles.circleText}>{seconds}</Text>
+        <Text style={styles.circleText}>
+          {props.circleOption === "Countdown" && seconds}
+          {props.circleOption === "Instructional" && instructions}
+        </Text>
       </View>
     </TouchableOpacity>
   );
