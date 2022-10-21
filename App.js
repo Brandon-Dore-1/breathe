@@ -10,15 +10,13 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}
+
       >
         <Stack.Group>
           <Stack.Screen name="Home" component={BreathePage} />
         </Stack.Group>
         <Stack.Group screenOptions={{ presentation: "modal" }}>
-          <Stack.Screen name="SettingsModal" component={SettingsModal} />
+          <Stack.Screen name="Settings" component={SettingsModal} />
         </Stack.Group>
       </Stack.Navigator>
     </NavigationContainer>

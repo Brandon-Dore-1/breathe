@@ -5,23 +5,8 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Dimensions,
 } from "react-native";
-
-const vw = (percentage) => {
-  const viewportWidth = Dimensions.get("window").width;
-  const decimal = percentage * 0.01;
-  percentage = parseInt(percentage, 10);
-
-  if (percentage < 0) {
-    percentage = 100;
-  }
-  if (percentage > 1000) {
-    percentage = 1000;
-  }
-
-  return Math.round(viewportWidth * decimal);
-};
+import { vw } from "../utils/css.utils";
 
 const Breather = (props) => {
   const initialSeconds = props.initialSeconds;
@@ -40,13 +25,9 @@ const Breather = (props) => {
     if (!clicked) {
       let i = 0;
       let currentSecond = initialSeconds;
-      let start = true;
       setClicked(true);
       const id = setInterval(() => {
-        if (start) {
-          setIntervalId(id);
-          start = false;
-        }
+        setIntervalId(id);
         currentSecond = Math.abs((i++ % (initialSeconds * 2)) - initialSeconds);
         setSeconds(currentSecond);
         if (currentSecond === 0) {
@@ -74,6 +55,7 @@ const Breather = (props) => {
       }).start();
       clearInterval(intervalId);
       setSeconds(initialSeconds);
+      setInstructions("In");
       setClicked(false);
     }
     setTimeout(() => {
