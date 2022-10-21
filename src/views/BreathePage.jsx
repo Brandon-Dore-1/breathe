@@ -5,48 +5,28 @@ import {
   View,
   TouchableHighlight,
   Image,
-  Alert,
   Text,
 } from "react-native";
 import Breather from "../components/Breather";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
+import { fetchOrCreateSettings } from "../utils/storage.utils";
 
 const BreathePage = ({ navigation }) => {
-  const [circleOption, setcircleOption] = useState();
-  const [breatheTime, setBreatheTime] = useState();
+  const [circleOption, setcircleOption] = useState("null");
+  const [breatheTime, setBreatheTime] = useState("");
   const [isLoading, setLoading] = useState(true);
-
+  navigation.setOptions({ headerShown: false })
   const isFocused = useIsFocused();
 
-  const storeData = async (key, value) => {
-    try {
-      await AsyncStorage.setItem(key, value);
-    } catch (e) {
-      Alert.alert("Error", "There was an error saving your settings.");
-    }
-  };
-
-  const fetchOrCreateSettings = async () => {
-    try {
-      const breatheTimeTemp = await AsyncStorage.getItem("breatheTime");
-      const circleOptionTemp = await AsyncStorage.getItem("circleOption");
-      if (breatheTimeTemp !== null && circleOptionTemp !== null) {
-        setBreatheTime(parseInt(breatheTimeTemp));
-        setcircleOption(circleOptionTemp);
-      } else {
-        storeData("breatheTime", 5);
-        storeData("circleOption", "Countdown");
-      }
-      setLoading(false);
-    } catch (e) {
-      Alert.alert("Error", "There was an error retrieving your settings.");
-    }
-  };
-
   useEffect(() => {
-    setLoading(true);
-    fetchOrCreateSettings();
+    const setData = async () => {
+      setLoading(true);
+      const data = await fetchOrCreateSettings();
+      setcircleOption(data.circleOption);
+      setBreatheTime(data.breatheTime);
+      setLoading(false);
+    };
+    setData();
   }, [isFocused]);
 
   if (isLoading) {
@@ -59,7 +39,7 @@ const BreathePage = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <TouchableHighlight
-        onPress={() => navigation.navigate("SettingsModal")}
+        onPress={() => navigation.navigate("Settings")}
         style={styles.settingsContainer}
       >
         <Image
